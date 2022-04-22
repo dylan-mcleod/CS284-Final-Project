@@ -35,19 +35,32 @@ class AE(nn.Module):
     def forward(self, features):
         return model.forward(features)
         
+#TODO: LOAD FROM FILE
+test_dataset = torchvision.datasets.MNIST(
+    root="~/torch_datasets", train=False, transform=transform, download=True
+)
+
+test_loader = torch.utils.data.DataLoader(
+    test_dataset, batch_size=10, shuffle=False
+)
+
+train_dataset = torchvision.datasets.MNIST(
+    root="~/torch_datasets", train=True, transform=transform, download=True
+)
+
+train_loader = torch.utils.data.DataLoader(
+    train_dataset, batch_size=batch_size, shuffle=True
+)
+
 #  use gpu if available
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # create a model from `AE` autoencoder class
 # load it to the specified device, either gpu or cpu
-model = AE(input_shape=784).to(device)
+model = AE(1, 3, 1, 5, 1e-3, 0.9).to(device)
 
-# create an optimizer object
-net1 = AE(1, 3, 1, 5, 1e-3, 0.9)
 
-# mean-squared error loss
-criterion = nn.MSELoss()
-
+# TODO: FIX TRAINING CODE
 for epoch in range(epochs):
     loss = 0
     for batch_features, _ in train_loader:
@@ -81,23 +94,7 @@ for epoch in range(epochs):
     print("epoch : {}/{}, recon loss = {:.8f}".format(epoch + 1, epochs, loss))
     
 
-test_dataset = torchvision.datasets.MNIST(
-    root="~/torch_datasets", train=False, transform=transform, download=True
-)
-
-test_loader = torch.utils.data.DataLoader(
-    test_dataset, batch_size=10, shuffle=False
-)
-
-train_dataset = torchvision.datasets.MNIST(
-    root="~/torch_datasets", train=True, transform=transform, download=True
-)
-
-train_loader = torch.utils.data.DataLoader(
-    train_dataset, batch_size=batch_size, shuffle=True
-)
-
-
+# TODO FIX/IMPLEENT PROPER TESTING CODE
 test_examples = None
 
 with torch.no_grad():
