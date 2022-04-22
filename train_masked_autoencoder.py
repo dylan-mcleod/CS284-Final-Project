@@ -17,16 +17,6 @@ learning_rate = 1e-3
 
 transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 
-'''
-train_dataset = torchvision.datasets.MNIST(
-    root="~/torch_datasets", train=True, transform=transform, download=True
-)
-'''
-
-train_loader = torch.utils.data.DataLoader(
-    train_dataset, batch_size=batch_size, shuffle=True
-)
-
 class AE(nn.Module):
     def __init__(self, n_classes, hidden_dim, out_dim, layers, _lr, _momentum):
         hidden_dim = 64
@@ -98,6 +88,15 @@ test_dataset = torchvision.datasets.MNIST(
 test_loader = torch.utils.data.DataLoader(
     test_dataset, batch_size=10, shuffle=False
 )
+
+train_dataset = torchvision.datasets.MNIST(
+    root="~/torch_datasets", train=True, transform=transform, download=True
+)
+
+train_loader = torch.utils.data.DataLoader(
+    train_dataset, batch_size=batch_size, shuffle=True
+)
+
 
 test_examples = None
 
