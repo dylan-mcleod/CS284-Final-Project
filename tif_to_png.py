@@ -54,9 +54,11 @@ arr= band.ReadAsArray()
 
 tiles = [arr[x:x+256,y:y+256] for x in range(0,arr.shape[0],256) for y in range(0,arr.shape[1],256)]
 print('Save start')
+ind = 0
 for i in range(len(tiles)-1):
     if len(tiles[i])==256 and len(tiles[i][0]) ==256:
-        plimg.imsave("SierraImages/elevation/sierra%s.png"%i,tiles[i])#,vmin=0, vmax=8500,cmap="gray") ##Uncomment when saviing hight map.
+        plimg.imsave("SierraImages/elevation/sierra%s.png"%ind,tiles[i])#,vmin=0, vmax=8500,cmap="gray") ##Uncomment when saviing hight map.
+        ind += 1
         if i%1000 == 0:
             print(i/1000)
 
