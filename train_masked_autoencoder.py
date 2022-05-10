@@ -9,15 +9,6 @@ import torchvision
 import torch.utils.data as data
 import PIL
 
-seed = 42
-torch.manual_seed(seed)
-torch.backends.cudnn.benchmark = False
-torch.backends.cudnn.deterministic = True
-
-batch_size = 512
-epochs = 20
-learning_rate = 1e-3
-
 # transform = torchvision.transforms.Compose([torchvision.transforms.ToTensor()])
 
 class AE(nn.Module):
@@ -91,73 +82,83 @@ class LandHeightsDataset(torch.utils.data.Dataset):
 
         return sample
 
-train_data = LandHeightsDataset("Data", ["rogaland"])
-train_loader = data.DataLoader(train_data, batch_size=4, shuffle=True)
-#test_data = LandHeightsDataset("Data", ["rogaland"], transform)
-#test_loader  = data.DataLoader(test_data, batch_size=40, shuffle=True, num_workers=4)
+if __name__ == '__main__':
+    seed = 42
+    torch.manual_seed(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
 
-#  use gpu if available
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-# create a model from `AE` autoencoder class
-# load it to the specified device, either gpu or cpu
-model = AE(1, 64, 1, 5).to(device)
-
-
-optimizer = torch.optim.SGD(model.xmodel.parameters(), lr=1e-3, momentum=0.9)
-criterion = nn.MSELoss()
-for epoch in range(epochs):
-    loss = 0
-    for i, batch in enumerate(train_loader):
-        # reset the gradients back to zero
-        optimizer.zero_grad()
-        
-        # compute reconstructions
-        outputs = model(batch['elevation'])
-        
-        # compute training reconstruction loss
-        train_loss = criterion(outputs, batch['elevation'])
-        
-        # compute accumulated gradients
-        train_loss.backward()
-        
-        # perform parameter update based on current gradients
-        optimizer.step()
-        
-        # add the mini-batch training loss to epoch loss
-        loss += train_loss.item()
+    batch_size = 512
+    epochs = 20
+    learning_rate = 1e-3
+    #  use gpu if available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
-    # compute the epoch training loss
-    loss = loss / len(train_loader)
-    
-    # display the epoch training loss
-    print("epoch : {}/{}, recon loss = {:.8f}".format(epoch + 1, epochs, loss))
-    
-'''
-test_examples = None
+    train_data = LandHeightsDataset("Data", ["Uganda"])
+    train_loader = data.DataLoader(train_data, batch_size=64, shuffle=True, num_workers=10)
+    #test_data = LandHeightsDataset("Data", ["rogaland"], transform)
+    #test_loader  = data.DataLoader(test_data, batch_size=40, shuffle=True, num_workers=4)
 
-with torch.no_grad():
-    for batch_features in test_loader:
-        batch_features = batch_features[0]
-        test_examples = batch_features.to(device)
-        reconstruction = model(test_examples)        
-        number = 10
-        plt.figure(figsize=(20, 4))
-        for index in range(number):
-            # display original
-            ax = plt.subplot(2, number, index + 1)
-            plt.imshow(test_examples[index].cpu().numpy().reshape(128, 128))
-            plt.gray()
-            ax.get_xaxis().set_visible(False)
-            ax.get_yaxis().set_visible(False)
 
-            # display reconstruction
-            ax = plt.subplot(2, number, index + 1 + number)
-            plt.imshow(reconstruction[index].cpu().numpy().reshape(128, 128))
-            plt.gray()
-            ax.get_xaxis().set_visible(False)
-            ax.get_yaxis().set_visible(False)
-        plt.show()
-        break
-'''
+    # create a model from `AE` autoencoder class
+    # load it to the specified device, either gpu or cpu
+    model = AE(1, 64, 1, 5).to(device)
+
+
+    optimizer = torch.optim.SGD(model.xmodel.parameters(), lr=1e-3, momentum=0.9)
+    criterion = nn.MSELoss()
+    for epoch in range(epochs):
+        loss = 0
+        for i, batch in enumerate(train_loader):
+            # reset the gradients back to zero
+            optimizer.zero_grad()
+            
+            # compute reconstructions
+            outputs = model(batch['elevation'].to(device))
+            
+            # compute training reconstruction loss
+            train_loss = criterion(outputs, batch['elevation'].to(device))
+            
+            # compute accumulated gradients
+            train_loss.backward()
+            
+            # perform parameter update based on current gradients
+            optimizer.step()
+            
+            # add the mini-batch training loss to epoch loss
+            loss += train_loss.item()
+        
+        # compute the epoch training loss
+        loss = loss / len(train_loader)
+        
+        # display the epoch training loss
+        print("epoch : {}/{}, recon loss = {:.8f}".format(epoch + 1, epochs, loss))
+        
+    '''
+    test_examples = None
+
+    with torch.no_grad():
+        for batch_features in test_loader:
+            batch_features = batch_features[0]
+            test_examples = batch_features.to(device)
+            reconstruction = model(test_examples)        
+            number = 10
+            plt.figure(figsize=(20, 4))
+            for index in range(number):
+                # display original
+                ax = plt.subplot(2, number, index + 1)
+                plt.imshow(test_examples[index].cpu().numpy().reshape(128, 128))
+                plt.gray()
+                ax.get_xaxis().set_visible(False)
+                ax.get_yaxis().set_visible(False)
+
+                # display reconstruction
+                ax = plt.subplot(2, number, index + 1 + number)
+                plt.imshow(reconstruction[index].cpu().numpy().reshape(128, 128))
+                plt.gray()
+                ax.get_xaxis().set_visible(False)
+                ax.get_yaxis().set_visible(False)
+            plt.show()
+            break
+    '''
         
