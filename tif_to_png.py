@@ -31,6 +31,10 @@ def SplitTIF(name, outfilename, iscover):
 
 SplitTIF('Data/DEMUganda.tif',   'Data/Uganda/elevation/Uganda', False)
 SplitTIF('Data/CoverUganda.tif', 'Data/Uganda/cover/Uganda', True)
+SplitTIF('Data/DEMTest.tif',   'Data/Uganda/elevation/Rogaland', False)
+SplitTIF('Data/Newtest.tif', 'Data/Uganda/cover/Rogaland', True)
+SplitTIF('Data/SierraDEM.tif',   'Data/Uganda/elevation/Sierra', False)
+SplitTIF('Data/SierraCover.tif', 'Data/Uganda/cover/Sierra', True)
 
 
 
